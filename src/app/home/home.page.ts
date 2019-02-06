@@ -1,7 +1,8 @@
 import { Component, ViewEncapsulation, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { SwipeCardsModule } from 'ng2-swipe-cards';
+// import { SwipeCardsModule } from 'ng2-swipe-cards';
 import { Http } from '@angular/http';
-// import 'rxjs/Rx';
+import 'rxjs/Rx';
+import 'rxjs/Subject';
 import { element } from 'protractor';
 import { 
   StackConfig,
@@ -12,7 +13,7 @@ import {
   SwingStackComponent,
   SwingCardComponent } from 'angular2-swing';
 
-import 'rxjs/add/operator/map';
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -42,6 +43,10 @@ export class HomePage {
     };
   }
 
+
+  /**
+   * Either subscribe in controller or set in HTML
+   */
   ngAfterViewInit(){
     this.swingStack.throwin.subscribe((event: DragEvent) => {
       event.target.style.background = '#ffffff';
@@ -95,7 +100,7 @@ export class HomePage {
    */
   addNewCards(count: number) {
     this.http.get('https://randomuser.me/api/?results=' + count)
-    .map(data => data.json().results)
+    .pipe(map(data => data.json().results)) //Property ‘map’ does not exist on type Observable : <add pipe(map)>
     .subscribe(result => {
       for (let val of result) {
         this.cards.push(val);
@@ -103,8 +108,20 @@ export class HomePage {
     })
   }
 
+  /**
+   * http://stackoverflow.com/questions/57803/how-to-convert-decimal-to-hex-in-javascript
+   * @param d 
+   * @param padding 
+   */
   decimalToHex(d, padding) {
+    var hex = Number(d).toString(16);
+    padding = typeof(padding) === "undefined" || padding === null ? padding = 2 : padding;
 
+    while (hex.length < padding) {
+      hex = "0" + hex;
+    }
+
+    return hex;
   }
 
 
